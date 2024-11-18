@@ -1,17 +1,19 @@
-#include <avr/io.h>
-#include <util/delay.h>
-
+#include <stdbool.h>
 #define F_CPU 16000000UL
 
-int main(void) {
-  // Set PORTB5 (Pin 13) as output
-  DDRB |= (1 << DDB5);
+#include <util/delay.h>
 
-  while (1) {
-    // Toggle LED
-    PORTB |= (1 << PORTB5); // LED on
+#define DDRB_ADDRESS (*(volatile uint8_t *)0x24)
+#define PORTB_ADDRESS (*(volatile uint8_t *)0x25)
+
+int main(void) {
+
+  DDRB_ADDRESS |= (1 << 5);
+
+  while (true) {
+    PORTB_ADDRESS |= (1 << 5);
     _delay_ms(500);
-    PORTB &= ~(1 << PORTB5); // LED off
+    PORTB_ADDRESS &= ~(1 << 5);
     _delay_ms(500);
   }
 
