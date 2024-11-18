@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <stdint.h>
 #include <util/delay.h>
 #include <util/twi.h> // i2c/twi library
 
@@ -72,6 +73,12 @@ void ssd1306_init() {
   i2c_stop();
 }
 
+void fill_clear_screen() {
+  for (uint16_t i = 0; i < 1024; i++) {
+    i2c_send_byte(0x00);
+  }
+}
+
 // Fill entire screen with a pattern
 void fill_screen(int offset) {
   i2c_start();
@@ -90,10 +97,15 @@ void fill_screen(int offset) {
   i2c_send_byte(SSD1306_ADDR << 1);
   i2c_send_byte(0x40); // Data stream
 
-  // Fill all pixels (128x64 = 1024 bytes)
+  // the goal here is to draw a line down the middle
   for (uint16_t i = 0; i < 1024; i++) {
-    i2c_send_byte(0xFF); // All pixels on
+    if (i % 64 == 0) {
+      i2c_send_byte(0xFF); // All pixels on
+    } else {
+      i2c_send_byte(0x00); // All pixels on
+    }
   }
+
   i2c_stop();
 }
 
